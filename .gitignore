@@ -1,0 +1,11 @@
+# YouTube authentication cookies
+youtube-cookies.txt
+cookies.txt
+
+# Temporary files
+*.part
+*.ytdl
+
+# Windows
+Thumbs.db
+Desktop.ini
