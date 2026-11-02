@@ -14,6 +14,7 @@ import platform
 import shutil
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
@@ -171,7 +172,7 @@ def create_shortcut() -> None:
             launcher.write_text(
                 "[Desktop Entry]\nType=Application\nName=YouTube Downloader\n"
                 f"Exec={sys.executable} {Path(__file__).resolve()}\nPath={ROOT}\n"
-                "Terminal=true\nCategories=AudioVideo;Network;\n", encoding="utf-8")
+                "Terminal=false\nCategories=AudioVideo;Network;\n", encoding="utf-8")
             launcher.chmod(0o755)
             if desktop.is_dir():
                 copy = desktop / "YouTube Downloader.desktop"
@@ -229,9 +230,53 @@ def main() -> int:
     if use_gui:
         create_shortcut()
         say("Launching the graphical downloader...")
-        return subprocess.call([sys.executable, str(GUI_APP)], cwd=str(ROOT))
+        # Do not hide/detach the launcher until the GUI survives startup.
+        popen_kwargs = {
+            "cwd": str(ROOT),
+            "stdin": subprocess.DEVNULL,
+            "stdout": subprocess.DEVNULL,
+            "stderr": subprocess.DEVNULL,
+        }
+        if system == "Windows":
+            popen_kwargs["creationflags"] = getattr(subprocess, "CREATE_NO_WINDOW", 0)
+            startupinfo = subprocess.STARTUPINFO()
+            startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+            startupinfo.wShowWindow = 0
+            popen_kwargs["startupinfo"] = startupinfo
+        else:
+            # Keep the GUI alive independently when the launcher exits.
+            popen_kwargs["start_new_session"] = True
 
-    say("Launching the terminal downloader...")
+        try:
+            gui_process = subprocess.Popen([sys.executable, str(GUI_APP)], **popen_kwargs)
+        except OSError as exc:
+            say(f"Could not launch the GUI: {exc}")
+            wait_exit()
+            return 1
+
+        time.sleep(1.0)
+        exit_code = gui_process.poll()
+        if exit_code is not None:
+            say(f"The GUI exited during startup (exit code {exit_code}).")
+            say("The launcher terminal will remain available for troubleshooting.")
+            wait_exit()
+            return exit_code or 1
+
+        if system == "Windows":
+            try:
+                import ctypes
+                ctypes.windll.kernel32.FreeConsole()
+            except Exception as exc:
+                say(f"Could not detach the launcher console: {exc}")
+                wait_exit()
+                return 1
+
+        # Linux/macOS terminal windows belong to their terminal emulator and
+        # cannot be portably minimized by a child process. The GUI is detached;
+        # the launcher exits and returns control to the shell.
+        return 0
+
+    say("Launching the terminal downloader (terminal will remain visible)...")
     return subprocess.call([sys.executable, str(TERMINAL_APP)], cwd=str(ROOT))
 
 
