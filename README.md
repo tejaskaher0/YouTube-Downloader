@@ -684,6 +684,18 @@ If an authentication cookie is accidentally pushed to a public repository, delet
 - **threading / queue** — keep the GUI responsive while downloading
 - **platform / os / subprocess** — operating-system, display and dependency checks
 
+## License
+
+Copyright (c) 2026 Tejas Aher. All Rights Reserved.
+
+This project is proprietary and is not open-source software.
+
+No permission is granted to copy, modify, distribute, or
+commercially use this project's contents without prior
+written permission from the copyright holder.
+
+See the [LICENSE](LICENSE) file for details.
+
 ## Author
 
 **Tejas Aher**  
