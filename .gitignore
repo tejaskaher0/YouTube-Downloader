@@ -1,11 +1,22 @@
-# YouTube authentication cookies
+# Authentication cookies - NEVER COMMIT THESE
 youtube-cookies.txt
 cookies.txt
+*.cookies
 
-# Temporary files
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+.env
+
+# Downloaded media and temporary fragments
 *.part
 *.ytdl
 
-# Windows
+# OS / editor files
+.DS_Store
 Thumbs.db
-Desktop.ini
+.vscode/
+.idea/
