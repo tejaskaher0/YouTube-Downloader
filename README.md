@@ -51,7 +51,8 @@ The graphical interface is built with Tkinter. Both interfaces use **yt-dlp** fo
 - Use one `start.py` entry point for GUI and terminal environments.
 - Check for `yt-dlp` and offer to install it automatically.
 - Check for FFmpeg/ffprobe and offer package-manager installation where supported.
-- Create a desktop launcher in supported graphical environments.
+- Create or refresh a desktop/application-menu launcher on Linux, a `.app` bundle on macOS, and a `.lnk` shortcut on Windows after a successful GUI startup.
+- Remove application shortcuts with the built-in cross-platform uninstaller without deleting the downloader or downloaded videos.
 
 **Important:** The chosen resolution is a *maximum*, not a guarantee. If the source does not offer the selected resolution, yt-dlp may choose a lower available format.
 
@@ -83,7 +84,7 @@ YouTube-Downloader-GUI/
 │   └── terminal.py      # Interactive terminal interface
 ├── start.py             # OS/display detection, dependency checks and launcher
 ├── run_windows.bat      # Windows convenience launcher
-├── run_unix.sh          # Linux/macOS convenience launcher
+├── run_unix.sh          # Linux/macOS smart launcher (automatic GUI/terminal detection)
 ├── requirements.txt     # Python package requirements
 ├── README.md            # Project documentation
 └── .gitignore           # Excludes cookies, virtual environments and temp files
@@ -105,6 +106,15 @@ Keep `start.py`, `src/main.py`, and `src/terminal.py` in this structure. Do not 
 The starter can install `yt-dlp` with pip and can offer to install FFmpeg through a detected package manager. Python itself must already be installed. Tkinter is an operating-system/Python distribution component and may need to be installed separately for GUI use.
 
 ---
+
+## Launching the application
+
+- **GUI:** Run `start.py` on a graphical desktop. The GUI starts directly without opening a terminal window.
+- **Desktop shortcut:** After a successful GUI startup, Windows creates `YouTube Downloader.lnk`; Linux creates an application-menu entry under `~/.local/share/applications` (or `$XDG_DATA_HOME/applications`) and a `.desktop` file in the configured Desktop folder; macOS creates `YouTube Downloader.app` on the Desktop. On Linux, some desktop environments may require you to right-click the `.desktop` file and choose **Allow Launching** if the environment does not honor automatic trust metadata.
+- **Terminal:** Run `python start.py --terminal` (Windows) or `python3 start.py --terminal` (Linux/macOS). The supplied `run_windows.bat` and `run_unix.sh` launchers use the same automatic GUI/terminal detection as `start.py`.
+- **Headless/server:** Run `start.py` from an existing terminal; without a graphical display it automatically selects terminal mode.
+
+The GUI launcher checks/installs `yt-dlp` quietly before opening the app. FFmpeg is optional at startup; the GUI displays a warning if it is not on PATH.
 
 ## Installation
 
@@ -593,6 +603,20 @@ python3 start.py
 
 If you intend to use the GUI over SSH, configure a working X11/Wayland forwarding setup and a display server on the client. Otherwise, use terminal mode.
 
+### Desktop shortcut is not visible on Linux
+
+- Start `start.py` from a graphical desktop session, not a headless SSH session.
+- Check the application-menu launcher at `~/.local/share/applications/youtube-downloader.desktop` (or `$XDG_DATA_HOME/applications/youtube-downloader.desktop`).
+- Check the Desktop folder reported by `xdg-user-dir DESKTOP`; the launcher is written there as `YouTube Downloader.desktop`.
+- On GNOME, right-click the Desktop launcher and choose **Allow Launching** if it appears as a text file or is not trusted. The starter also attempts to set GNOME's trusted metadata using `gio`.
+- Make sure the project folder has not been moved after creating the shortcut. Run `python3 start.py` again from its new location to refresh the launcher.
+
+### macOS application shortcut is missing
+
+- Run `python3 start.py` while logged into the macOS graphical desktop.
+- Check `~/Desktop/YouTube Downloader.app` in Finder.
+- If the project folder was moved, run `start.py` again from its new location to recreate the app bundle.
+
 ### GUI does not open on Windows
 
 - Confirm you installed Python with Tcl/Tk support.
@@ -690,11 +714,9 @@ Copyright (c) 2026 Tejas Aher. All Rights Reserved.
 
 This project is proprietary and is not open-source software.
 
-No permission is granted to copy, modify, distribute, or
-commercially use this project's contents without prior
-written permission from the copyright holder.
+No permission is granted to copy, modify, distribute, or commercially use this project's contents without prior written permission from the copyright holder.
 
-See the [LICENSE](LICENSE) file for details.
+See the [LICENSE](https://github.com/tejaskaher0/YouTube-Downloader/blob/main/LICENSE) file for details.
 
 ## Author
 
@@ -704,3 +726,30 @@ GitHub: <https://github.com/tejaskaher0>
 ---
 
 *If you find this project useful, consider starring the repository.*
+
+
+
+### Removing the desktop shortcut
+
+The project includes a cross-platform shortcut uninstaller. It removes only the YouTube Downloader shortcuts created for the current user; it does **not** delete the project folder, Python packages, or downloaded videos.
+
+Run the command for your platform from the project folder:
+
+**Any platform (Python 3):**
+```bash
+python start.py --uninstall-shortcut
+```
+On Linux/macOS, use `python3` if `python` is not mapped to Python 3.
+
+**Windows:** double-click `uninstall_windows.bat`, or run:
+```bat
+uninstall_windows.bat
+```
+
+**Linux/macOS:**
+```bash
+chmod +x uninstall_unix.sh
+./uninstall_unix.sh
+```
+
+The uninstaller removes the Windows Desktop `.lnk`, Linux Desktop and application-menu `.desktop` entries, or macOS Desktop `.app` bundle. It is safe to run if the shortcut has already been removed.

@@ -1,6 +1,1 @@
-@echo off
-setlocal
-cd /d "%~dp0"
-python start.py
-if errorlevel 1 pause
-endlocal
+@echo off\r\nsetlocal\r\ncd /d "%~dp0"\r\npython start.py\r\nif errorlevel 1 pause\r\nendlocal\r\n

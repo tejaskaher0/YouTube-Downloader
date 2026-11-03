@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
-cd "$(dirname "$0")"
-exec python3 start.py
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
+exec python3 start.py "$@"
