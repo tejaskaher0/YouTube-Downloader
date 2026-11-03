@@ -33,6 +33,7 @@ The graphical interface is built with Tkinter. Both interfaces use **yt-dlp** fo
 12. [Troubleshooting](#troubleshooting)
 13. [Security and GitHub guidance](#security-and-github-guidance)
 14. [Technologies](#technologies)
+15. [Removing the desktop shortcut](#removing-the-desktop-shortcut)
 
 ---
 
@@ -708,28 +709,8 @@ If an authentication cookie is accidentally pushed to a public repository, delet
 - **threading / queue** — keep the GUI responsive while downloading
 - **platform / os / subprocess** — operating-system, display and dependency checks
 
-## License
 
-Copyright (c) 2026 Tejas Aher. All Rights Reserved.
-
-This project is proprietary and is not open-source software.
-
-No permission is granted to copy, modify, distribute, or commercially use this project's contents without prior written permission from the copyright holder.
-
-See the [LICENSE](https://github.com/tejaskaher0/YouTube-Downloader/blob/main/LICENSE) file for details.
-
-## Author
-
-**Tejas Aher**  
-GitHub: <https://github.com/tejaskaher0>
-
----
-
-*If you find this project useful, consider starring the repository.*
-
-
-
-### Removing the desktop shortcut
+## Removing the desktop shortcut
 
 The project includes a cross-platform shortcut uninstaller. It removes only the YouTube Downloader shortcuts created for the current user; it does **not** delete the project folder, Python packages, or downloaded videos.
 
@@ -753,3 +734,22 @@ chmod +x uninstall_unix.sh
 ```
 
 The uninstaller removes the Windows Desktop `.lnk`, Linux Desktop and application-menu `.desktop` entries, or macOS Desktop `.app` bundle. It is safe to run if the shortcut has already been removed.
+
+## License
+
+Copyright (c) 2026 Tejas Aher. All Rights Reserved.
+
+This project is proprietary and is not open-source software.
+
+No permission is granted to copy, modify, distribute, or commercially use this project's contents without prior written permission from the copyright holder.
+
+See the [LICENSE](https://github.com/tejaskaher0/YouTube-Downloader/blob/main/LICENSE) file for details.
+
+## Author
+
+**Tejas Aher**  
+GitHub: <https://github.com/tejaskaher0>
+
+---
+
+*If you find this project useful, consider starring the repository.*
